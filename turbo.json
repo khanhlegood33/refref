@@ -4,7 +4,6 @@
   "concurrency": "100",
   "globalEnv": [
     "INFISICAL_TOKEN",
-    "SKIP_ENV_VALIDATION",
     "BETTER_AUTH_SECRET",
     "DATABASE_URL",
     "NEXT_PUBLIC_APP_URL",

@@ -37,7 +37,6 @@ Production, Preview and Development:
 | `BETTER_AUTH_SECRET` | Random secret, e.g. `openssl rand -base64 32`. |
 | `BETTER_AUTH_URL` | Public origin, e.g. `https://refref.vercel.app`. |
 | `NEXT_PUBLIC_APP_URL` | Same public origin. |
-| `SKIP_ENV_VALIDATION` | `true` — lets Docker/CI builds run without validating every optional var. |
 | `NEXT_PUBLIC_ASSETS_URL` | CDN that hosts `attribution.v1.js` / `widget.v1.js` (defaults to `http://localhost:8787`). |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional, enables Google sign-in. |
 | `RESEND_API_KEY` | Optional, enables transactional email. |
@@ -46,6 +45,12 @@ Production, Preview and Development:
 > reads the session (`/`, `/auth/*`, `/api/auth/*`, `/api/trpc/*`) returns a
 > 500 because Better Auth queries PostgreSQL. A real database is required for
 > a functional site.
+>
+> Do **not** set `SKIP_ENV_VALIDATION` on Vercel: `@/env` applies Zod defaults
+> and transforms at import time, and skipping validation leaves
+> `NEXT_PUBLIC_ENABLED_SOCIAL_AUTH` undefined, which makes `getAuth()` throw
+> `Cannot read properties of undefined (reading 'reduce')` during
+> `next build`. Provide `DATABASE_URL` and `BETTER_AUTH_SECRET` instead.
 
 ## Database setup
 
