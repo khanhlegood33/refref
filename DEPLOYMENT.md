@@ -37,7 +37,7 @@ Production, Preview and Development:
 | `BETTER_AUTH_SECRET` | Random secret, e.g. `openssl rand -base64 32`. |
 | `BETTER_AUTH_URL` | Public origin, e.g. `https://refref.vercel.app`. |
 | `NEXT_PUBLIC_APP_URL` | Same public origin. |
-| `NEXT_PUBLIC_ASSETS_URL` | CDN that hosts `attribution.v1.js` / `widget.v1.js` (defaults to `http://localhost:8787`). |
+| `NEXT_PUBLIC_ASSETS_URL` | Optional CDN that hosts `attribution.v1.js` / `widget.v1.js`. Leave unset on Vercel — the webapp then skips those scripts instead of requesting `http://localhost:8787`. |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional, enables Google sign-in. |
 | `RESEND_API_KEY` | Optional, enables transactional email. |
 

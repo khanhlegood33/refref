@@ -39,11 +39,23 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <Script
-          suppressHydrationWarning
-          src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
-          strategy="afterInteractive"
-        />
+        {/* The attribution and widget scripts belong on customer sites, not on
+            the webapp itself. Only load them when an assets CDN is configured;
+            otherwise the default localhost:8787 URL would fail in production. */}
+        {env.NEXT_PUBLIC_ASSETS_URL ? (
+          <>
+            <Script
+              suppressHydrationWarning
+              src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
+              strategy="afterInteractive"
+            />
+            <Script
+              suppressHydrationWarning
+              src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
+              strategy="afterInteractive"
+            />
+          </>
+        ) : null}
         <Script
           id="refref-init"
           strategy="beforeInteractive"
@@ -52,11 +64,6 @@ export default function RootLayout({
               window.RefRef = window.RefRef || [];
             `,
           }}
-        />
-        <Script
-          suppressHydrationWarning
-          src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
-          strategy="afterInteractive"
         />
       </head>
       <body suppressHydrationWarning>
