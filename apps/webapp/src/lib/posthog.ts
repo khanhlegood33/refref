@@ -28,12 +28,13 @@ if (!env.NEXT_PUBLIC_POSTHOG_ENABLED && posthogClient) {
  */
 const posthog = new Proxy({} as PostHog, {
   get(_target, prop: string | symbol) {
-    // If PostHog is not configured, return no-op functions
+    // If PostHog is not configured, every string property must still be a
+    // callable no-op. `posthogClient` is null here, so checking its properties
+    // would always be false and `posthog.capture` would be `undefined`; callers
+    // using `posthog?.capture(...)` then throw even though `posthog` is truthy.
+    // That used to break the sign-up `user.create.after` hook with a 422.
     if (!posthogClient) {
-      return typeof prop === "string" &&
-        typeof posthogClient?.[prop as keyof PostHog] === "function"
-        ? () => Promise.resolve()
-        : undefined;
+      return typeof prop === "string" ? () => Promise.resolve() : undefined;
     }
 
     const original = posthogClient[prop as keyof PostHog];
