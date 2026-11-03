@@ -380,15 +380,26 @@ export function getAuth(config: AuthConfig) {
       user: {
         create: {
           after: async (user) => {
-            // Track user signup event
-            posthog?.capture({
-              distinctId: user.id,
-              event: "user_sign_up",
-              properties: {
-                email: user.email,
-                name: user.name || undefined,
-              },
-            });
+            // Telemetry is best-effort. A throwing `after` hook makes
+            // better-auth report 422 FAILED_TO_CREATE_USER (and leaves an
+            // orphaned user row), so never let analytics break sign-up.
+            try {
+              if (typeof posthog?.capture === "function") {
+                posthog.capture({
+                  distinctId: user.id,
+                  event: "user_sign_up",
+                  properties: {
+                    email: user.email,
+                    name: user.name || undefined,
+                  },
+                });
+              }
+            } catch (error) {
+              logger?.error("Failed to capture user signup event", {
+                userId: user.id,
+                error,
+              });
+            }
 
             // Auto-create default organization for new users
             try {

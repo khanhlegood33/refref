@@ -9,7 +9,7 @@ Vercel team **khanhle33**:
 | Production URL | https://refref.vercel.app |
 | Team URL | https://refref-khanhle33.vercel.app |
 | Framework | Next.js 16 (`apps/webapp`) |
-| Git | `khanhlegood33/refref`, branch `arena/9b77d734-refref` |
+| Git | `khanhlegood33/refref`, production branch `main` |
 
 Preview/branch domains are protected by Vercel SSO. The production
 `*.vercel.app` aliases are the public entry points.
@@ -62,6 +62,20 @@ pnpm -F @refref/coredb db:seed   # optional template data
 
 Then redeploy (or just update `DATABASE_URL` in Vercel and redeploy — env
 changes require a new deployment to take effect).
+
+## Health checks
+
+- `GET /api/health` runs `SELECT 1` and returns `{"ok":true,"db":true}`.
+- `GET /api/health?deep=1&token=<BETTER_AUTH_SECRET>` additionally performs a
+  complete email sign-up (user → account → session → default organization) and
+  cleans up the temporary rows. Any `422 FAILED_TO_CREATE_USER` here means a
+  `databaseHooks.user.create.after` hook threw.
+
+> `NEXT_PUBLIC_POSTHOG_KEY` is optional. When it is absent, the PostHog wrapper
+> must still expose callable no-op methods — otherwise `posthog?.capture(...)`
+> in the sign-up hook throws and Better Auth responds 422 while leaving an
+> orphaned `user` row. Every retry then fails with
+> `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`.
 
 ## Redeploy
 
